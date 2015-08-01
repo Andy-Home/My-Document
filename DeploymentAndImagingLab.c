@@ -107,6 +107,7 @@
 		copy C:\Images\WindowsWithOffice.wim D:
 		copy C:\Samples\Scripts\* D:
 
+
 /********************************************************************************************************************/
 //2.Apply Windows images using a script
 //	Step 1:Format and set up the hard drive partitions on the reference device
@@ -193,3 +194,26 @@
 //		<4>Shut down or reboot your device, either by holding down the power button for a full five seconds, or by using the following command:
 		wpeutil shutdown
 
+
+/********************************************************************************************************************/
+//4.Windows updates
+//	Step 1:Mount the Windows image file
+	mkdir C:\mount\windows
+	Dism /Mount-Image /ImageFile:"C:\Image\WindowsWithOffice.wim" /Index:1 /MountDir:"C:\mount\windows" /Optimize
+//	Step 2:Add the Windows update package
+//		<1.From Microsoft Connect,download the Windows update.Save this in the folder:C:\WindowsUpdates
+
+//		<2.Add the updates to the image
+		Dism /Add-Package /Image:"C\mount\windows" /PackagePath="C:\WindowsUpdates\kb1010101.cab" /PackagePath="C:\WindowsUpdates\kb1020202.cab" /PackagePath="C:\WindowsUpdates\kb1030303.cab" /LogPath=C:\mount\dism.log\
+
+//		<3.Lock in the updates,so that they are restored during a recovery
+		Dism /Cleanup-Image /Image=C:\ /StartComponentCleanup /ResetBase /ScratchDir:C:\Temp
+//	Step 3:Unmount the images
+//		<1.Close all applications that might access files from the image
+
+//		<2.Commit the changes and unmount the Windows image:
+		Dism /Unmount-Image /MountDir:"C:\mount\windows" /Commit
+
+
+/********************************************************************************************************************/
+//5.Keeping Windows settings through a recovery
